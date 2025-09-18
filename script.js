@@ -160,6 +160,7 @@ function calcularPrazo(selectTipo) {
         prazoSpan.textContent = '-';
         prazoSpan.className = 'prazo-reposicao text-xs font-medium text-gray-600';
     }
+    calcularEstatisticas();
 }
 
 function calcularEstatisticas() {

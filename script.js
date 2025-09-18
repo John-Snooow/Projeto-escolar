@@ -282,26 +282,6 @@ function carregarDados() {
     input.click();
 }
 
-function restaurarBackup() {
-    const backup = localStorage.getItem('frequencia_professores_backup');
-    if (!backup) {
-        alert('❌ Nenhum backup encontrado no navegador.\n\nDica: Salve os dados primeiro para criar um backup automático.');
-        return;
-    }
-    if (!confirm('🔄 Deseja restaurar o backup salvo no navegador?\n\nIsso substituirá todos os dados atuais.')) {
-        return;
-    }
-    try {
-        const dadosCompletos = JSON.parse(backup);
-        restaurarDados(dadosCompletos);
-        const dataBackup = dadosCompletos.dataExportacao ? `\nBackup de: ${dadosCompletos.dataExportacao}` : '';
-        alert(`✅ Backup restaurado com sucesso!\n${dadosCompletos.professores.length} professor(es) carregado(s).${dataBackup}`);
-    } catch (error) {
-        alert('❌ Erro ao restaurar backup. Os dados podem estar corrompidos.');
-        console.error('Erro ao restaurar backup:', error);
-    }
-}
-
 function restaurarDados(dadosCompletos) {
     if (dadosCompletos.configuracoes) {
         document.getElementById('mesAno').value = dadosCompletos.configuracoes.mesAno || '2024-07';

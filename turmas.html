@@ -175,12 +175,22 @@
         function adicionarTurma() {
             const nomeTurma = prompt("Digite o nome da nova turma (ex: 6º Ano A):");
             if (nomeTurma) {
-                // Determinar o turno com base no nome da turma
+                // Solicitar ao usuário que selecione o turno
+                const turnoSelecionado = prompt("Selecione o turno:\n1 - Manhã\n2 - Tarde\n3 - Noite", "1");
                 let turno = 'manha';
-                if (nomeTurma.toLowerCase().includes('tarde') || nomeTurma.toLowerCase().includes('vespertino')) {
-                    turno = 'tarde';
-                } else if (nomeTurma.toLowerCase().includes('noite') || nomeTurma.toLowerCase().includes('noturno')) {
-                    turno = 'noite';
+                
+                switch(turnoSelecionado) {
+                    case '1':
+                        turno = 'manha';
+                        break;
+                    case '2':
+                        turno = 'tarde';
+                        break;
+                    case '3':
+                        turno = 'noite';
+                        break;
+                    default:
+                        turno = 'manha';
                 }
                 
                 const novaTurma = {

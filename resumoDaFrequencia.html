@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resumo de Frequência de Professores</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="src/ChatGPT Image 18 de set. de 2025, 18_20_26.png" type="image/x-icon">
+</head>
+<body class="bg-gray-100 p-4 sm:p-6 md:p-8">
+
+    <!-- Barra de Navegação -->
+    <nav class="bg-white rounded-lg shadow-lg p-4 mb-6">
+        <div class="flex flex-wrap justify-center gap-4">
+            <a href="index.html" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                📊 Frequência
+            </a>
+            <a href="resumoDaFrequencia.html" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                📈 Resumo de Frequência
+            </a>
+        </div>
+    </nav>
+
+    <!-- Cabeçalho e Controles -->
+    <div class="bg-white rounded-lg shadow-lg p-4 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div>
+                <label for="mesAno" class="block text-sm font-medium text-gray-700 mb-1">Mês/Ano:</label>
+                <input type="month" id="mesAno" name="mesAno" value="2024-07" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+                <label for="periodo" class="block text-sm font-medium text-gray-700 mb-1">Período:</label>
+                <select id="periodo" name="periodo" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    <option value="Matutino">Matutino</option>
+                    <option value="Vespertino">Vespertino</option>
+                    <option value="Noturno">Noturno</option>
+                </select>
+            </div>
+            <div class="flex items-end">
+                <button onclick="atualizarResumo()" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                    🔍 Atualizar Resumo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resumo de Frequência -->
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
+        <div class="bg-gradient-to-r from-green-600 to-teal-600 text-white p-4">
+            <h2 class="text-xl font-bold">Resumo de Frequência dos Professores</h2>
+            <p class="text-green-100">Visão geral do desempenho dos professores no período selecionado</p>
+        </div>
+        
+        <div class="p-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div class="bg-blue-50 rounded-lg p-4 text-center border border-blue-100">
+                    <div class="text-3xl font-bold text-blue-600" id="totalProfessoresResumo">0</div>
+                    <div class="text-sm text-gray-600">Total de Professores</div>
+                </div>
+                <div class="bg-green-50 rounded-lg p-4 text-center border border-green-100">
+                    <div class="text-3xl font-bold text-green-600" id="mediaPresencaResumo">0%</div>
+                    <div class="text-sm text-gray-600">Média de Presença</div>
+                </div>
+                <div class="bg-red-50 rounded-lg p-4 text-center border border-red-100">
+                    <div class="text-3xl font-bold text-red-600" id="totalFaltasResumo">0</div>
+                    <div class="text-sm text-gray-600">Total de Faltas</div>
+                </div>
+                <div class="bg-purple-50 rounded-lg p-4 text-center border border-purple-100">
+                    <div class="text-3xl font-bold text-purple-600" id="aulasRepostasResumo">0</div>
+                    <div class="text-sm text-gray-600">Aulas Repostas</div>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-3">Distribuição de Status</h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                    <div class="bg-green-100 rounded-lg p-3 text-center">
+                        <div class="text-2xl font-bold text-green-800" id="excelenteCount">0</div>
+                        <div class="text-sm text-green-700">Excelente (≥95%)</div>
+                    </div>
+                    <div class="bg-blue-100 rounded-lg p-3 text-center">
+                        <div class="text-2xl font-bold text-blue-800" id="bomCount">0</div>
+                        <div class="text-sm text-blue-700">Bom (90-94%)</div>
+                    </div>
+                    <div class="bg-yellow-100 rounded-lg p-3 text-center">
+                        <div class="text-2xl font-bold text-yellow-800" id="regularCount">0</div>
+                        <div class="text-sm text-yellow-700">Regular (80-89%)</div>
+                    </div>
+                    <div class="bg-red-100 rounded-lg p-3 text-center">
+                        <div class="text-2xl font-bold text-red-800" id="atencaoCount">0</div>
+                        <div class="text-sm text-red-700">Atenção (<80%)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela de Resumo Detalhado -->
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div class="bg-gradient-to-r from-teal-600 to-cyan-600 text-white p-4">
+            <h2 class="text-xl font-bold">Detalhamento por Professor</h2>
+            <p class="text-teal-100">Informações detalhadas de cada professor</p>
+        </div>
+        
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="px-4 py-3 text-left font-semibold text-gray-700">Professor</th>
+                        <th class="px-4 py-3 text-left font-semibold text-gray-700">Disciplina</th>
+                        <th class="px-4 py-3 text-left font-semibold text-gray-700">Turma</th>
+                        <th class="px-4 py-3 text-center font-semibold text-gray-700">Dias Letivos</th>
+                        <th class="px-4 py-3 text-center font-semibold text-gray-700">Faltas</th>
+                        <th class="px-4 py-3 text-center font-semibold text-gray-700">Aulas Repostas</th>
+                        <th class="px-4 py-3 text-center font-semibold text-gray-700">Presença</th>
+                        <th class="px-4 py-3 text-center font-semibold text-gray-700">Status</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaResumo">
+                    <tr>
+                        <td colspan="8" class="px-4 py-6 text-center text-gray-500">
+                            Nenhum dado disponível. Selecione um período e clique em "Atualizar Resumo".
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Função para carregar dados do localStorage
+        function carregarDados() {
+            const dadosSalvos = localStorage.getItem('frequencia_professores_automatico');
+            if (dadosSalvos) {
+                try {
+                    return JSON.parse(dadosSalvos);
+                } catch (error) {
+                    console.error('Erro ao carregar dados:', error);
+                }
+            }
+            return null;
+        }
+
+        // Função para atualizar o resumo com base nos dados salvos
+        function atualizarResumo() {
+            const dados = carregarDados();
+            if (!dados) {
+                alert('Nenhum dado encontrado. Por favor, adicione professores na página de frequência primeiro.');
+                return;
+            }
+
+            const professores = dados.professores || [];
+            if (professores.length === 0) {
+                alert('Nenhum professor encontrado nos dados salvos.');
+                return;
+            }
+
+            // Atualizar estatísticas gerais
+            atualizarEstatisticas(professores);
+            
+            // Atualizar tabela detalhada
+            atualizarTabelaDetalhada(professores);
+        }
+
+        // Função para calcular estatísticas
+        function calcularEstatisticas(professores) {
+            let totalProfessores = professores.length;
+            let somaPresenca = 0;
+            let totalFaltas = 0;
+            let aulasRepostas = 0;
+            
+            // Contadores de status
+            let excelente = 0;
+            let bom = 0;
+            let regular = 0;
+            let atencao = 0;
+
+            professores.forEach(prof => {
+                const diasLetivos = parseInt(prof.diasLetivos) || 22;
+                const faltas = parseInt(prof.faltas) || 0;
+                const reposicoes = parseInt(prof.aulasRepostas) || 0;
+                
+                totalFaltas += faltas;
+                aulasRepostas += reposicoes;
+                
+                // Calcular presença
+                const faltasEfetivas = Math.max(0, faltas - reposicoes);
+                const presenca = diasLetivos > 0 ? Math.max(0, ((diasLetivos - faltasEfetivas) / diasLetivos) * 100) : 0;
+                somaPresenca += presenca;
+                
+                // Classificar status
+                if (presenca >= 95) {
+                    excelente++;
+                } else if (presenca >= 90) {
+                    bom++;
+                } else if (presenca >= 80) {
+                    regular++;
+                } else {
+                    atencao++;
+                }
+            });
+
+            const mediaPresenca = totalProfessores > 0 ? (somaPresenca / totalProfessores) : 0;
+
+            return {
+                totalProfessores,
+                mediaPresenca,
+                totalFaltas,
+                aulasRepostas,
+                excelente,
+                bom,
+                regular,
+                atencao
+            };
+        }
+
+        // Função para atualizar as estatísticas gerais
+        function atualizarEstatisticas(professores) {
+            const stats = calcularEstatisticas(professores);
+            
+            document.getElementById('totalProfessoresResumo').textContent = stats.totalProfessores;
+            document.getElementById('mediaPresencaResumo').textContent = stats.mediaPresenca.toFixed(1) + '%';
+            document.getElementById('totalFaltasResumo').textContent = stats.totalFaltas;
+            document.getElementById('aulasRepostasResumo').textContent = stats.aulasRepostas;
+            
+            document.getElementById('excelenteCount').textContent = stats.excelente;
+            document.getElementById('bomCount').textContent = stats.bom;
+            document.getElementById('regularCount').textContent = stats.regular;
+            document.getElementById('atencaoCount').textContent = stats.atencao;
+        }
+
+        // Função para atualizar a tabela detalhada
+        function atualizarTabelaDetalhada(professores) {
+            const tbody = document.getElementById('tabelaResumo');
+            tbody.innerHTML = '';
+
+            if (professores.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="px-4 py-6 text-center text-gray-500">
+                            Nenhum professor encontrado.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            professores.forEach(prof => {
+                const diasLetivos = parseInt(prof.diasLetivos) || 22;
+                const faltas = parseInt(prof.faltas) || 0;
+                const reposicoes = parseInt(prof.aulasRepostas) || 0;
+                
+                // Calcular presença
+                const faltasEfetivas = Math.max(0, faltas - reposicoes);
+                const presenca = diasLetivos > 0 ? Math.max(0, ((diasLetivos - faltasEfetivas) / diasLetivos) * 100) : 0;
+                
+                // Determinar status e cor
+                let status, statusClass;
+                if (presenca >= 95) {
+                    status = 'Excelente';
+                    statusClass = 'bg-green-100 text-green-800';
+                } else if (presenca >= 90) {
+                    status = 'Bom';
+                    statusClass = 'bg-blue-100 text-blue-800';
+                } else if (presenca >= 80) {
+                    status = 'Regular';
+                    statusClass = 'bg-yellow-100 text-yellow-800';
+                } else {
+                    status = 'Atenção';
+                    statusClass = 'bg-red-100 text-red-800';
+                }
+
+                const row = document.createElement('tr');
+                row.className = 'border-b hover:bg-gray-50 transition-colors';
+                row.innerHTML = `
+                    <td class="px-4 py-3">${prof.professor || '-'}</td>
+                    <td class="px-4 py-3">${prof.disciplina || '-'}</td>
+                    <td class="px-4 py-3">${prof.turma || '-'}</td>
+                    <td class="px-4 py-3 text-center">${diasLetivos}</td>
+                    <td class="px-4 py-3 text-center">${faltas}</td>
+                    <td class="px-4 py-3 text-center">${reposicoes}</td>
+                    <td class="px-4 py-3 text-center font-semibold">${presenca.toFixed(1)}%</td>
+                    <td class="px-4 py-3 text-center">
+                        <span class="px-2 py-1 rounded-full text-xs font-medium ${statusClass}">
+                            ${status}
+                        </span>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Carregar dados automaticamente ao abrir a página
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tentar carregar dados salvos
+            const dados = carregarDados();
+            if (dados && dados.professores && dados.professores.length > 0) {
+                atualizarResumo();
+            }
+        });
+    </script>
+</body>
+</html>

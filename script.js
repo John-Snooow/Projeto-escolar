@@ -1,18 +1,16 @@
-
-
 function adicionarProfessor() {
     const tbody = document.getElementById('tabelaProfessores');
     const novaLinha = document.createElement('tr');
     novaLinha.className = 'border-b hover:bg-gray-50 transition-colors';
     novaLinha.innerHTML = `
         <td class="px-3 py-3">
-            <input type="text" placeholder="Nome do Professor" class="w-full px-2 py-1 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+            <input type="text" placeholder="Nome do Professor" class="w-full px-2 py-1 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm" onchange="salvarAutomaticamente()">
         </td>
         <td class="px-3 py-3">
-            <input type="text" placeholder="Disciplina" class="w-full px-2 py-1 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+            <input type="text" placeholder="Disciplina" class="w-full px-2 py-1 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm" onchange="salvarAutomaticamente()">
         </td>
         <td class="px-3 py-3">
-            <select class="w-full px-2 py-1 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+            <select class="w-full px-2 py-1 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm" onchange="salvarAutomaticamente()">
                 <option value="">Selecionar Turma</option>
                 <option value="6º Ano A">6º Ano A</option>
                 <option value="6º Ano B">6º Ano B</option>
@@ -25,17 +23,17 @@ function adicionarProfessor() {
             </select>
         </td>
         <td class="px-3 py-3 text-center">
-            <input type="number" value="22" min="1" max="31" class="w-14 px-1 py-1 border rounded text-center focus:ring-2 focus:ring-blue-500 text-sm" onchange="calcularPresenca(this)">
+            <input type="number" value="22" min="1" max="31" class="w-14 px-1 py-1 border rounded text-center focus:ring-2 focus:ring-blue-500 text-sm" onchange="salvarAutomaticamente(); calcularPresenca(this)">
         </td>
         <td class="px-3 py-3 text-center">
             <div class="flex items-center justify-center gap-1">
                 <button onclick="alterarFaltas(this, -1)" class="bg-red-500 hover:bg-red-600 text-white w-5 h-5 rounded text-xs">-</button>
-                <input type="number" value="0" min="0" class="w-10 px-1 py-1 border rounded text-center faltas-input text-sm" onchange="calcularPresenca(this)">
+                <input type="number" value="0" min="0" class="w-10 px-1 py-1 border rounded text-center faltas-input text-sm" onchange="salvarAutomaticamente(); calcularPresenca(this)">
                 <button onclick="alterarFaltas(this, 1)" class="bg-green-500 hover:bg-green-600 text-white w-5 h-5 rounded text-xs">+</button>
             </div>
         </td>
         <td class="px-3 py-3 text-center">
-            <select class="tipo-falta px-1 py-1 border rounded text-xs focus:ring-2 focus:ring-blue-500" onchange="calcularPrazo(this)">
+            <select class="tipo-falta px-1 py-1 border rounded text-xs focus:ring-2 focus:ring-blue-500" onchange="salvarAutomaticamente(); calcularPrazo(this)">
                 <option value="">Selecionar</option>
                 <option value="simples">Falta Simples</option>
                 <option value="atestado">Falta c/ Atestado</option>
@@ -47,12 +45,12 @@ function adicionarProfessor() {
         <td class="px-3 py-3 text-center">
             <div class="flex items-center justify-center gap-1">
                 <button onclick="alterarReposicoes(this, -1)" class="bg-red-500 hover:bg-red-600 text-white w-5 h-5 rounded text-xs">-</button>
-                <input type="number" value="0" min="0" class="w-10 px-1 py-1 border rounded text-center reposicoes-input text-sm" onchange="calcularPresencaComReposicao(this)">
+                <input type="number" value="0" min="0" class="w-10 px-1 py-1 border rounded text-center reposicoes-input text-sm" onchange="salvarAutomaticamente(); calcularPresencaComReposicao(this)">
                 <button onclick="alterarReposicoes(this, 1)" class="bg-green-500 hover:bg-green-600 text-white w-5 h-5 rounded text-xs">+</button>
             </div>
         </td>
         <td class="px-3 py-3">
-            <textarea placeholder="Justificativa..." class="w-full px-2 py-1 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs resize-none" rows="2"></textarea>
+            <textarea placeholder="Justificativa..." class="w-full px-2 py-1 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs resize-none" rows="2" onchange="salvarAutomaticamente()"></textarea>
         </td>
         <td class="px-3 py-3 text-center">
             <span class="presenca-percent font-semibold text-green-600 text-sm">100%</span>
@@ -66,12 +64,14 @@ function adicionarProfessor() {
     `;
     tbody.appendChild(novaLinha);
     calcularEstatisticas();
+    salvarAutomaticamente();
 }
 
 function removerLinha(botao) {
     if (confirm('Tem certeza que deseja remover este professor?')) {
         botao.closest('tr').remove();
         calcularEstatisticas();
+        salvarAutomaticamente();
     }
 }
 
@@ -81,6 +81,7 @@ function alterarFaltas(botao, incremento) {
     const novoValor = Math.max(0, valorAtual + incremento);
     input.value = novoValor;
     calcularPresenca(input);
+    salvarAutomaticamente();
 }
 
 function alterarReposicoes(botao, incremento) {
@@ -89,6 +90,7 @@ function alterarReposicoes(botao, incremento) {
     const novoValor = Math.max(0, valorAtual + incremento);
     input.value = novoValor;
     calcularPresencaComReposicao(input);
+    salvarAutomaticamente();
 }
 
 function calcularPresenca(elemento) {
@@ -102,6 +104,7 @@ function calcularPresenca(elemento) {
         const faltas = parseInt(linha.querySelector('.faltas-input').value) || 0;
         atualizarLinha(linha, diasLetivos, faltas, 0);
     }
+    salvarAutomaticamente();
 }
 
 function calcularPresencaComReposicao(inputReposicoes) {
@@ -111,6 +114,7 @@ function calcularPresencaComReposicao(inputReposicoes) {
     const faltas = parseInt(linha.querySelector('.faltas-input').value) || 0;
     const reposicoes = parseInt(inputReposicoes.value) || 0;
     atualizarLinha(linha, diasLetivos, faltas, reposicoes);
+    salvarAutomaticamente();
 }
 
 function atualizarLinha(linha, diasLetivos, faltas, reposicoes) {
@@ -161,6 +165,7 @@ function calcularPrazo(selectTipo) {
         prazoSpan.className = 'prazo-reposicao text-xs font-medium text-gray-600';
     }
     calcularEstatisticas();
+    salvarAutomaticamente();
 }
 
 function calcularEstatisticas() {
@@ -203,8 +208,141 @@ function limparTabela() {
     if (confirm('Tem certeza que deseja limpar toda a tabela? Esta ação não pode ser desfeita.')) {
         document.getElementById('tabelaProfessores').innerHTML = '';
         adicionarProfessor();
+        salvarAutomaticamente();
     }
 }
+
+// Função de salvamento automático
+function salvarAutomaticamente() {
+    const linhas = document.querySelectorAll('#tabelaProfessores tr');
+    const dados = [];
+    linhas.forEach(linha => {
+        const professor = linha.querySelector('input[placeholder="Nome do Professor"]').value || '';
+        const disciplina = linha.querySelector('input[placeholder="Disciplina"]').value || '';
+        const turma = linha.querySelector('td:nth-child(3) select').value || '';
+        const diasLetivos = linha.querySelector('input[type="number"]:not(.faltas-input):not(.reposicoes-input)').value || '22';
+        const faltas = linha.querySelector('.faltas-input').value || '0';
+        const tipoFalta = linha.querySelector('.tipo-falta').value || '';
+        const aulasRepostas = linha.querySelector('.reposicoes-input').value || '0';
+        const justificativa = linha.querySelector('textarea').value || '';
+        dados.push({ professor, disciplina, turma, diasLetivos, faltas, tipoFalta, aulasRepostas, justificativa });
+    });
+
+    const configuracoes = {
+        mesAno: document.getElementById('mesAno').value,
+        periodo: document.getElementById('periodo').value
+    };
+
+    const dadosCompletos = {
+        configuracoes,
+        professores: dados,
+        dataExportacao: new Date().toLocaleString('pt-BR'),
+        ultimaAtualizacao: new Date().toISOString()
+    };
+
+    // Salvar no localStorage
+    localStorage.setItem('frequencia_professores_automatico', JSON.stringify(dadosCompletos));
+}
+
+// Função para carregar dados salvos automaticamente
+function carregarDadosAutomaticos() {
+    const dadosSalvos = localStorage.getItem('frequencia_professores_automatico');
+    if (dadosSalvos) {
+        try {
+            const dadosCompletos = JSON.parse(dadosSalvos);
+            restaurarDadosModificado(dadosCompletos);
+        } catch (error) {
+            console.error('Erro ao carregar dados automáticos:', error);
+        }
+    }
+}
+
+// Modificar a função restaurarDados para não chamar calcularEstatisticas no final
+function restaurarDadosModificado(dadosCompletos) {
+    if (dadosCompletos.configuracoes) {
+        document.getElementById('mesAno').value = dadosCompletos.configuracoes.mesAno || '2024-07';
+        document.getElementById('periodo').value = dadosCompletos.configuracoes.periodo || 'Matutino';
+    }
+
+    const tbody = document.getElementById('tabelaProfessores');
+    tbody.innerHTML = '';
+
+    const professores = dadosCompletos.professores || [];
+    if (professores.length === 0) {
+        adicionarProfessor();
+        return;
+    }
+
+    professores.forEach(prof => {
+        const novaLinha = document.createElement('tr');
+        novaLinha.className = 'border-b hover:bg-gray-50 transition-colors';
+        novaLinha.innerHTML = `
+            <td class="px-3 py-3"><input type="text" placeholder="Nome do Professor" class="w-full px-2 py-1 border rounded focus:ring-2 focus:ring-blue-500 text-sm" value="${prof.professor || ''}" onchange="salvarAutomaticamente()"></td>
+            <td class="px-3 py-3"><input type="text" placeholder="Disciplina" class="w-full px-2 py-1 border rounded focus:ring-2 focus:ring-blue-500 text-sm" value="${prof.disciplina || ''}" onchange="salvarAutomaticamente()"></td>
+            <td class="px-3 py-3">
+                <select class="w-full px-2 py-1 border rounded focus:ring-2 focus:ring-blue-500 text-sm" onchange="salvarAutomaticamente()">
+                    <option value="">Selecionar Turma</option>
+                    <option value="6º Ano A" ${prof.turma === '6º Ano A' ? 'selected' : ''}>6º Ano A</option>
+                    <option value="6º Ano B" ${prof.turma === '6º Ano B' ? 'selected' : ''}>6º Ano B</option>
+                    <option value="7º Ano A" ${prof.turma === '7º Ano A' ? 'selected' : ''}>7º Ano A</option>
+                    <option value="7º Ano B" ${prof.turma === '7º Ano B' ? 'selected' : ''}>7º Ano B</option>
+                    <option value="8º Ano A" ${prof.turma === '8º Ano A' ? 'selected' : ''}>8º Ano A</option>
+                    <option value="8º Ano B" ${prof.turma === '8º Ano B' ? 'selected' : ''}>8º Ano B</option>
+                    <option value="9º Ano A" ${prof.turma === '9º Ano A' ? 'selected' : ''}>9º Ano A</option>
+                    <option value="9º Ano B" ${prof.turma === '9º Ano B' ? 'selected' : ''}>9º Ano B</option>
+                </select>
+            </td>
+            <td class="px-3 py-3 text-center"><input type="number" value="${prof.diasLetivos || 22}" min="1" max="31" class="w-14 px-1 py-1 border rounded text-center focus:ring-2 focus:ring-blue-500 text-sm" onchange="salvarAutomaticamente(); calcularPresenca(this)"></td>
+            <td class="px-3 py-3 text-center">
+                <div class="flex items-center justify-center gap-1">
+                    <button onclick="alterarFaltas(this, -1)" class="bg-red-500 hover:bg-red-600 text-white w-5 h-5 rounded text-xs">-</button>
+                    <input type="number" value="${prof.faltas || 0}" min="0" class="w-10 px-1 py-1 border rounded text-center faltas-input text-sm" onchange="salvarAutomaticamente(); calcularPresenca(this)">
+                    <button onclick="alterarFaltas(this, 1)" class="bg-green-500 hover:bg-green-600 text-white w-5 h-5 rounded text-xs">+</button>
+                </div>
+            </td>
+            <td class="px-3 py-3 text-center">
+                <select class="tipo-falta px-1 py-1 border rounded text-xs focus:ring-2 focus:ring-blue-500" onchange="salvarAutomaticamente(); calcularPrazo(this)">
+                    <option value="">Selecionar</option>
+                    <option value="simples" ${prof.tipoFalta === 'simples' ? 'selected' : ''}>Falta Simples</option>
+                    <option value="atestado" ${prof.tipoFalta === 'atestado' ? 'selected' : ''}>Falta c/ Atestado</option>
+                </select>
+            </td>
+            <td class="px-3 py-3 text-center"><span class="prazo-reposicao text-xs font-medium text-gray-600">-</span></td>
+            <td class="px-3 py-3 text-center">
+                <div class="flex items-center justify-center gap-1">
+                    <button onclick="alterarReposicoes(this, -1)" class="bg-red-500 hover:bg-red-600 text-white w-5 h-5 rounded text-xs">-</button>
+                    <input type="number" value="${prof.aulasRepostas || 0}" min="0" class="w-10 px-1 py-1 border rounded text-center reposicoes-input text-sm" onchange="salvarAutomaticamente(); calcularPresencaComReposicao(this)">
+                    <button onclick="alterarReposicoes(this, 1)" class="bg-green-500 hover:bg-green-600 text-white w-5 h-5 rounded text-xs">+</button>
+                </div>
+            </td>
+            <td class="px-3 py-3"><textarea placeholder="Justificativa..." class="w-full px-2 py-1 border rounded focus:ring-2 focus:ring-blue-500 text-xs resize-none" rows="2" onchange="salvarAutomaticamente()">${prof.justificativa || ''}</textarea></td>
+            <td class="px-3 py-3 text-center"><span class="presenca-percent font-semibold text-green-600 text-sm">100%</span></td>
+            <td class="px-3 py-3 text-center"><span class="status-badge bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">Excelente</span></td>
+            <td class="px-3 py-3 text-center"><button onclick="removerLinha(this)" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs">🗑️</button></td>
+        `;
+        tbody.appendChild(novaLinha);
+
+        const diasLetivosInput = novaLinha.querySelector('input[type="number"]:not(.faltas-input):not(.reposicoes-input)');
+        const faltasInput = novaLinha.querySelector('.faltas-input');
+        const reposicoesInput = novaLinha.querySelector('.reposicoes-input');
+        const tipoFaltaSelect = novaLinha.querySelector('.tipo-falta');
+
+        atualizarLinha(novaLinha, parseInt(diasLetivosInput.value), parseInt(faltasInput.value), parseInt(reposicoesInput.value));
+        calcularPrazo(tipoFaltaSelect);
+    });
+    
+    calcularEstatisticas();
+}
+
+// Substituir a função restaurarDados original pela nova versão
+function restaurarDados(dadosCompletos) {
+    restaurarDadosModificado(dadosCompletos);
+}
+
+// Chamar o carregamento automático quando a página for carregada
+document.addEventListener('DOMContentLoaded', function() {
+    carregarDadosAutomaticos();
+});
 
 function salvarDados() {
     const linhas = document.querySelectorAll('#tabelaProfessores tr');
@@ -280,80 +418,4 @@ function carregarDados() {
         reader.readAsText(file);
     };
     input.click();
-}
-
-function restaurarDados(dadosCompletos) {
-    if (dadosCompletos.configuracoes) {
-        document.getElementById('mesAno').value = dadosCompletos.configuracoes.mesAno || '2024-07';
-        document.getElementById('periodo').value = dadosCompletos.configuracoes.periodo || 'Matutino';
-    }
-
-    const tbody = document.getElementById('tabelaProfessores');
-    tbody.innerHTML = '';
-
-    const professores = dadosCompletos.professores || [];
-    if (professores.length === 0) {
-        adicionarProfessor();
-        return;
-    }
-
-    professores.forEach(prof => {
-        const novaLinha = document.createElement('tr');
-        novaLinha.className = 'border-b hover:bg-gray-50 transition-colors';
-        novaLinha.innerHTML = `
-            <td class="px-3 py-3"><input type="text" placeholder="Nome do Professor" class="w-full px-2 py-1 border rounded focus:ring-2 focus:ring-blue-500 text-sm" value="${prof.professor || ''}"></td>
-            <td class="px-3 py-3"><input type="text" placeholder="Disciplina" class="w-full px-2 py-1 border rounded focus:ring-2 focus:ring-blue-500 text-sm" value="${prof.disciplina || ''}"></td>
-            <td class="px-3 py-3">
-                <select class="w-full px-2 py-1 border rounded focus:ring-2 focus:ring-blue-500 text-sm">
-                    <option value="">Selecionar Turma</option>
-                    <option value="6º Ano A" ${prof.turma === '6º Ano A' ? 'selected' : ''}>6º Ano A</option>
-                    <option value="6º Ano B" ${prof.turma === '6º Ano B' ? 'selected' : ''}>6º Ano B</option>
-                    <option value="7º Ano A" ${prof.turma === '7º Ano A' ? 'selected' : ''}>7º Ano A</option>
-                    <option value="7º Ano B" ${prof.turma === '7º Ano B' ? 'selected' : ''}>7º Ano B</option>
-                    <option value="8º Ano A" ${prof.turma === '8º Ano A' ? 'selected' : ''}>8º Ano A</option>
-                    <option value="8º Ano B" ${prof.turma === '8º Ano B' ? 'selected' : ''}>8º Ano B</option>
-                    <option value="9º Ano A" ${prof.turma === '9º Ano A' ? 'selected' : ''}>9º Ano A</option>
-                    <option value="9º Ano B" ${prof.turma === '9º Ano B' ? 'selected' : ''}>9º Ano B</option>
-                </select>
-            </td>
-            <td class="px-3 py-3 text-center"><input type="number" value="${prof.diasLetivos || 22}" min="1" max="31" class="w-14 px-1 py-1 border rounded text-center focus:ring-2 focus:ring-blue-500 text-sm" onchange="calcularPresenca(this)"></td>
-            <td class="px-3 py-3 text-center">
-                <div class="flex items-center justify-center gap-1">
-                    <button onclick="alterarFaltas(this, -1)" class="bg-red-500 hover:bg-red-600 text-white w-5 h-5 rounded text-xs">-</button>
-                    <input type="number" value="${prof.faltas || 0}" min="0" class="w-10 px-1 py-1 border rounded text-center faltas-input text-sm" onchange="calcularPresenca(this)">
-                    <button onclick="alterarFaltas(this, 1)" class="bg-green-500 hover:bg-green-600 text-white w-5 h-5 rounded text-xs">+</button>
-                </div>
-            </td>
-            <td class="px-3 py-3 text-center">
-                <select class="tipo-falta px-1 py-1 border rounded text-xs focus:ring-2 focus:ring-blue-500" onchange="calcularPrazo(this)">
-                    <option value="">Selecionar</option>
-                    <option value="simples" ${prof.tipoFalta === 'simples' ? 'selected' : ''}>Falta Simples</option>
-                    <option value="atestado" ${prof.tipoFalta === 'atestado' ? 'selected' : ''}>Falta c/ Atestado</option>
-                </select>
-            </td>
-            <td class="px-3 py-3 text-center"><span class="prazo-reposicao text-xs font-medium text-gray-600">-</span></td>
-            <td class="px-3 py-3 text-center">
-                <div class="flex items-center justify-center gap-1">
-                    <button onclick="alterarReposicoes(this, -1)" class="bg-red-500 hover:bg-red-600 text-white w-5 h-5 rounded text-xs">-</button>
-                    <input type="number" value="${prof.aulasRepostas || 0}" min="0" class="w-10 px-1 py-1 border rounded text-center reposicoes-input text-sm" onchange="calcularPresencaComReposicao(this)">
-                    <button onclick="alterarReposicoes(this, 1)" class="bg-green-500 hover:bg-green-600 text-white w-5 h-5 rounded text-xs">+</button>
-                </div>
-            </td>
-            <td class="px-3 py-3"><textarea placeholder="Justificativa..." class="w-full px-2 py-1 border rounded focus:ring-2 focus:ring-blue-500 text-xs resize-none" rows="2">${prof.justificativa || ''}</textarea></td>
-            <td class="px-3 py-3 text-center"><span class="presenca-percent font-semibold text-green-600 text-sm">100%</span></td>
-            <td class="px-3 py-3 text-center"><span class="status-badge bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">Excelente</span></td>
-            <td class="px-3 py-3 text-center"><button onclick="removerLinha(this)" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs">🗑️</button></td>
-        `;
-        tbody.appendChild(novaLinha);
-
-        const diasLetivosInput = novaLinha.querySelector('input[type="number"]:not(.faltas-input):not(.reposicoes-input)');
-        const faltasInput = novaLinha.querySelector('.faltas-input');
-        const reposicoesInput = novaLinha.querySelector('.reposicoes-input');
-        const tipoFaltaSelect = novaLinha.querySelector('.tipo-falta');
-
-        atualizarLinha(novaLinha, parseInt(diasLetivosInput.value), parseInt(faltasInput.value), parseInt(reposicoesInput.value));
-        calcularPrazo(tipoFaltaSelect);
-    });
-
-    calcularEstatisticas();
 }

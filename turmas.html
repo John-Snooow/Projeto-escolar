@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turmas - Sistema Escolar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="src/ChatGPT Image 18 de set. de 2025, 18_20_26.png" type="image/x-icon">
+</head>
+<body class="bg-gray-100 p-4 sm:p-6 md:p-8">
+
+    <!-- Barra de Navegação -->
+    <nav class="bg-white rounded-lg shadow-lg p-4 mb-6">
+        <div class="flex flex-wrap justify-center gap-4">
+            <a href="index.html" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                📊 Frequência
+            </a>
+            <a href="resumoDaFrequencia.html" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                📈 Resumo de Frequência
+            </a>
+            <a href="turmas.html" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                👥 Turmas
+            </a>
+        </div>
+    </nav>
+
+    <!-- Cabeçalho e Controles -->
+    <div class="bg-white rounded-lg shadow-lg p-4 mb-6">
+        <div class="flex flex-wrap gap-3 justify-center">
+            <button onclick="adicionarTurma()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                ➕ Adicionar Turma
+            </button>
+            <button onclick="window.print()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                🖨️ Imprimir
+            </button>
+            <button onclick="salvarDados()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                💾 Salvar Dados
+            </button>
+            <button onclick="carregarDados()" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                📂 Carregar Dados
+            </button>
+            <button onclick="limparTodasTurmas()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                🗑️ Limpar Todas
+            </button>
+            <button onclick="procurarErros()" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                🔍 Procurar Erro
+            </button>
+            <button onclick="window.location.href='login.html'" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                🚪 Sair
+            </button>
+        </div>
+    </div>
+
+    <!-- Filtros por Turno -->
+    <div class="bg-white rounded-lg shadow-lg p-4 mb-6">
+        <h3 class="font-bold text-lg text-gray-800 mb-3">Filtrar por Turno</h3>
+        <div class="flex flex-wrap gap-3" id="filtroTurno">
+            <button onclick="filtrarPorTurno('todas')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors ring-2 ring-offset-2 ring-indigo-500 ring-opacity-50">
+                📚 Todas as Turmas
+            </button>
+            <button onclick="filtrarPorTurno('manha')" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                🌅 Manhã
+            </button>
+            <button onclick="filtrarPorTurno('tarde')" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                🌇 Tarde
+            </button>
+            <button onclick="filtrarPorTurno('noite')" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                🌙 Noite
+            </button>
+        </div>
+    </div>
+
+    <!-- Seção Principal -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Lista de Turmas -->
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4">
+                    <h2 class="text-xl font-bold">Listagem de Turmas</h2>
+                    <p class="text-blue-100">Grade horária de cada turma</p>
+                </div>
+                
+                <div class="p-4" id="listaTurmas">
+                    <!-- As turmas serão carregadas aqui dinamicamente -->
+                    <div class="text-center py-8 text-gray-500">
+                        Nenhuma turma cadastrada. Clique em "Adicionar Turma" para começar.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quadro de Professores -->
+        <div>
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
+                <div class="bg-gradient-to-r from-green-600 to-teal-600 text-white p-4">
+                    <h2 class="text-xl font-bold">Professores</h2>
+                    <p class="text-green-100">Quadro de aulas por professor</p>
+                </div>
+                
+                <div class="p-4">
+                    <div class="mb-4">
+                        <input type="text" id="pesquisaProfessor" placeholder="Pesquisar professor..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" onkeyup="filtrarProfessores()">
+                        <button onclick="limparPesquisa()" class="mt-2 w-full bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-1 rounded-lg text-sm">Limpar Pesquisa</button>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="px-3 py-2 text-left font-semibold text-gray-700 cursor-pointer" onclick="ordenarProfessores('nome')">Professor ▲</th>
+                                    <th class="px-3 py-2 text-left font-semibold text-gray-700 cursor-pointer" onclick="ordenarProfessores('materia')">Matéria</th>
+                                    <th class="px-3 py-2 text-center font-semibold text-gray-700 cursor-pointer" onclick="ordenarProfessores('aulas')">Aulas</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelaProfessores">
+                                <!-- Professores serão carregados aqui dinamicamente -->
+                                <tr>
+                                    <td colspan="3" class="px-3 py-4 text-center text-gray-500">
+                                        Nenhum professor cadastrado.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visualização por Professor -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4">
+                    <h2 class="text-xl font-bold">Visualização por Professor</h2>
+                    <p class="text-purple-100">Grade horária do professor selecionado</p>
+                </div>
+                
+                <div class="p-4">
+                    <div class="mb-4">
+                        <select id="selecaoProfessor" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" onchange="mostrarGradeProfessor()">
+                            <option value="">Selecione um professor</option>
+                            <!-- Opções serão carregadas dinamicamente -->
+                        </select>
+                    </div>
+                    
+                    <div class="overflow-x-auto" id="gradeProfessor">
+                        <table class="w-full">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="px-3 py-2 text-left font-semibold text-gray-700">Dia</th>
+                                    <th class="px-3 py-2 text-left font-semibold text-gray-700">Horário</th>
+                                    <th class="px-3 py-2 text-left font-semibold text-gray-700">Turma</th>
+                                    <th class="px-3 py-2 text-left font-semibold text-gray-700">Matéria</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="4" class="px-3 py-4 text-center text-gray-500">
+                                        Selecione um professor para ver sua grade.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Estrutura de dados para turmas
+        let turmas = [];
+        let professores = [];
+        let filtroTurno = 'todas'; // 'todas', 'manha', 'tarde', 'noite'
+
+        // Função para adicionar uma nova turma
+        function adicionarTurma() {
+            const nomeTurma = prompt("Digite o nome da nova turma (ex: 6º Ano A):");
+            if (nomeTurma) {
+                // Determinar o turno com base no nome da turma
+                let turno = 'manha';
+                if (nomeTurma.toLowerCase().includes('tarde') || nomeTurma.toLowerCase().includes('vespertino')) {
+                    turno = 'tarde';
+                } else if (nomeTurma.toLowerCase().includes('noite') || nomeTurma.toLowerCase().includes('noturno')) {
+                    turno = 'noite';
+                }
+                
+                const novaTurma = {
+                    id: Date.now(),
+                    nome: nomeTurma,
+                    turno: turno,
+                    horarios: {}
+                };
+                
+                // Inicializar horários para cada dia da semana
+                const dias = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
+                dias.forEach(dia => {
+                    novaTurma.horarios[dia] = [];
+                });
+                
+                turmas.push(novaTurma);
+                salvarDadosTurmas();
+                carregarTurmas();
+                atualizarProfessores();
+            }
+        }
+
+        // Função para adicionar horário a uma turma
+        function adicionarHorario(turmaId, dia) {
+            const turma = turmas.find(t => t.id === turmaId);
+            if (turma) {
+                const horario = prompt("Digite o horário (ex: 08:00-09:00):");
+                const professor = prompt("Digite o nome do professor:");
+                const materia = prompt("Digite a matéria:");
+                
+                if (horario && professor && materia) {
+                    turma.horarios[dia].push({
+                        id: Date.now(),
+                        horario: horario,
+                        professor: professor,
+                        materia: materia
+                    });
+                    
+                    salvarDadosTurmas();
+                    carregarTurmas();
+                    atualizarProfessores();
+                }
+            }
+        }
+
+        // Função para remover horário de uma turma
+        function removerHorario(turmaId, dia, horarioId) {
+            const turma = turmas.find(t => t.id === turmaId);
+            if (turma) {
+                turma.horarios[dia] = turma.horarios[dia].filter(h => h.id !== horarioId);
+                salvarDadosTurmas();
+                carregarTurmas();
+                atualizarProfessores();
+            }
+        }
+
+        // Função para remover uma turma
+        function removerTurma(turmaId) {
+            if (confirm("Tem certeza que deseja remover esta turma?")) {
+                turmas = turmas.filter(t => t.id !== turmaId);
+                salvarDadosTurmas();
+                carregarTurmas();
+                atualizarProfessores();
+            }
+        }
+
+        // Função para limpar todos os horários de uma turma
+        function limparTurma(turmaId) {
+            if (confirm("Tem certeza que deseja limpar todos os horários desta turma?")) {
+                const turma = turmas.find(t => t.id === turmaId);
+                if (turma) {
+                    const dias = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
+                    dias.forEach(dia => {
+                        turma.horarios[dia] = [];
+                    });
+                    salvarDadosTurmas();
+                    carregarTurmas();
+                    atualizarProfessores();
+                }
+            }
+        }
+
+        // Função para limpar todas as turmas
+        function limparTodasTurmas() {
+            if (confirm("Tem certeza que deseja limpar todas as turmas?")) {
+                turmas = [];
+                salvarDadosTurmas();
+                carregarTurmas();
+                atualizarProfessores();
+            }
+        }
+
+        // Função para procurar erros nas turmas
+        function procurarErros() {
+            let erros = [];
+            
+            turmas.forEach(turma => {
+                const dias = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
+                dias.forEach(dia => {
+                    turma.horarios[dia].forEach(horario => {
+                        if (!horario.horario || !horario.professor || !horario.materia) {
+                            erros.push(`Turma ${turma.nome}, ${dia}: Informações incompletas`);
+                        }
+                    });
+                });
+            });
+            
+            if (erros.length > 0) {
+                alert("Erros encontrados:\n\n" + erros.join("\n"));
+            } else {
+                alert("Nenhum erro encontrado. Todas as turmas estão corretas!");
+            }
+        }
+
+        // Função para filtrar turmas por turno
+        function filtrarPorTurno(turno) {
+            filtroTurno = turno;
+            carregarTurmas();
+            
+            // Atualizar estilo dos botões de filtro
+            const botoes = document.querySelectorAll('#filtroTurno button');
+            botoes.forEach(botao => {
+                botao.classList.remove('ring-2', 'ring-offset-2', 'ring-opacity-50');
+            });
+            
+            // Adicionar destaque ao botão selecionado
+            event.target.classList.add('ring-2', 'ring-offset-2', 'ring-opacity-50');
+        }
+
+        // Função para carregar turmas do localStorage
+        function carregarDadosTurmas() {
+            const dadosSalvos = localStorage.getItem('turmas_escolar');
+            if (dadosSalvos) {
+                try {
+                    turmas = JSON.parse(dadosSalvos);
+                } catch (error) {
+                    console.error('Erro ao carregar dados das turmas:', error);
+                }
+            }
+        }
+
+        // Função para salvar turmas no localStorage
+        function salvarDadosTurmas() {
+            localStorage.setItem('turmas_escolar', JSON.stringify(turmas));
+        }
+
+        // Função para salvar dados (mantendo compatibilidade com as outras páginas)
+        function salvarDados() {
+            salvarDadosTurmas();
+            alert('Dados das turmas salvos com sucesso!');
+        }
+
+        // Função para carregar dados (mantendo compatibilidade com as outras páginas)
+        function carregarDados() {
+            carregarDadosTurmas();
+            carregarTurmas();
+            atualizarProfessores();
+            alert('Dados das turmas carregados com sucesso!');
+        }
+
+        // Função para carregar e exibir as turmas
+        function carregarTurmas() {
+            const container = document.getElementById('listaTurmas');
+            
+            // Filtrar turmas pelo turno selecionado
+            let turmasFiltradas = turmas;
+            if (filtroTurno !== 'todas') {
+                turmasFiltradas = turmas.filter(turma => turma.turno === filtroTurno);
+            }
+            
+            if (turmasFiltradas.length === 0) {
+                const mensagem = filtroTurno === 'todas' ? 
+                    'Nenhuma turma cadastrada. Clique em "Adicionar Turma" para começar.' :
+                    `Nenhuma turma cadastrada para o turno ${filtroTurno === 'manha' ? 'da manhã' : filtroTurno === 'tarde' ? 'da tarde' : 'da noite'}.`;
+                
+                container.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        ${mensagem}
+                    </div>
+                `;
+                return;
+            }
+            
+            // Agrupar turmas por turno
+            const turmasPorTurno = {};
+            turmasFiltradas.forEach(turma => {
+                if (!turmasPorTurno[turma.turno]) {
+                    turmasPorTurno[turma.turno] = [];
+                }
+                turmasPorTurno[turma.turno].push(turma);
+            });
+            
+            let html = '';
+            
+            // Exibir turmas agrupadas por turno
+            Object.keys(turmasPorTurno).forEach(turno => {
+                const nomeTurno = turno === 'manha' ? 'Manhã' : turno === 'tarde' ? 'Tarde' : 'Noite';
+                const corTurno = turno === 'manha' ? 'bg-blue-100 border-blue-300' : 
+                                turno === 'tarde' ? 'bg-orange-100 border-orange-300' : 
+                                'bg-purple-100 border-purple-300';
+                const textoTurno = turno === 'manha' ? 'text-blue-800' : 
+                                  turno === 'tarde' ? 'text-orange-800' : 
+                                  'text-purple-800';
+                
+                html += `
+                    <div class="mb-6 ${corTurno} border rounded-lg">
+                        <div class="px-4 py-3 ${textoTurno} font-bold text-lg flex items-center">
+                            <span class="mr-2">${turno === 'manha' ? '🌅' : turno === 'tarde' ? '🌇' : '🌙'}</span>
+                            Turno ${nomeTurno}
+                        </div>
+                `;
+                
+                turmasPorTurno[turno].forEach(turma => {
+                    html += `
+                        <div class="m-4 bg-white border border-gray-200 rounded-lg">
+                            <div class="bg-gray-100 px-4 py-3 flex justify-between items-center rounded-t-lg">
+                                <h3 class="font-bold text-lg text-gray-800">${turma.nome}</h3>
+                                <div class="flex gap-2">
+                                    <button onclick="limparTurma(${turma.id})" class="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded text-sm">
+                                        🗑️ Limpar
+                                    </button>
+                                    <button onclick="removerTurma(${turma.id})" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-sm">
+                                        ❌ Remover
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-3 py-2 text-left font-semibold text-gray-700">Dia</th>
+                                            <th class="px-3 py-2 text-left font-semibold text-gray-700">Horários</th>
+                                            <th class="px-3 py-2 text-center font-semibold text-gray-700">Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                    `;
+                    
+                    const dias = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
+                    dias.forEach(dia => {
+                        html += `
+                            <tr class="border-b">
+                                <td class="px-3 py-2 font-medium">${dia}</td>
+                                <td class="px-3 py-2">
+                        `;
+                        
+                        if (turma.horarios[dia] && turma.horarios[dia].length > 0) {
+                            turma.horarios[dia].forEach(horario => {
+                                html += `
+                                    <div class="mb-1 p-2 bg-blue-50 rounded border border-blue-100">
+                                        <div class="font-medium">${horario.horario}</div>
+                                        <div class="text-sm text-gray-600">${horario.professor} - ${horario.materia}</div>
+                                        <button onclick="removerHorario(${turma.id}, '${dia}', ${horario.id})" class="mt-1 text-red-500 text-xs">Remover</button>
+                                    </div>
+                                `;
+                            });
+                        } else {
+                            html += '<div class="text-gray-400 text-sm">Nenhum horário cadastrado</div>';
+                        }
+                        
+                        html += `
+                                </td>
+                                <td class="px-3 py-2 text-center">
+                                    <button onclick="adicionarHorario(${turma.id}, '${dia}')" class="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded text-sm">
+                                        ➕ Adicionar
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    
+                    html += `
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // Função para atualizar a lista de professores
+        function atualizarProfessores() {
+            // Extrair professores únicos com suas matérias e contagem de aulas
+            const professoresMap = new Map();
+            
+            turmas.forEach(turma => {
+                const dias = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
+                dias.forEach(dia => {
+                    turma.horarios[dia].forEach(horario => {
+                        const chave = `${horario.professor}-${horario.materia}`;
+                        if (professoresMap.has(chave)) {
+                            professoresMap.set(chave, {
+                                ...professoresMap.get(chave),
+                                aulas: professoresMap.get(chave).aulas + 1
+                            });
+                        } else {
+                            professoresMap.set(chave, {
+                                nome: horario.professor,
+                                materia: horario.materia,
+                                aulas: 1
+                            });
+                        }
+                    });
+                });
+            });
+            
+            professores = Array.from(professoresMap.values());
+            carregarTabelaProfessores();
+            carregarSelecaoProfessores();
+        }
+
+        // Função para carregar a tabela de professores
+        function carregarTabelaProfessores() {
+            const tbody = document.getElementById('tabelaProfessores');
+            
+            if (professores.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="3" class="px-3 py-4 text-center text-gray-500">
+                            Nenhum professor cadastrado.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            let html = '';
+            professores.forEach(prof => {
+                html += `
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="px-3 py-2">${prof.nome}</td>
+                        <td class="px-3 py-2">${prof.materia}</td>
+                        <td class="px-3 py-2 text-center">${prof.aulas}</td>
+                    </tr>
+                `;
+            });
+            
+            tbody.innerHTML = html;
+        }
+
+        // Função para filtrar professores
+        function filtrarProfessores() {
+            const termo = document.getElementById('pesquisaProfessor').value.toLowerCase();
+            const tbody = document.getElementById('tabelaProfessores');
+            
+            if (professores.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="3" class="px-3 py-4 text-center text-gray-500">
+                            Nenhum professor cadastrado.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            const professoresFiltrados = professores.filter(prof => 
+                prof.nome.toLowerCase().includes(termo) || 
+                prof.materia.toLowerCase().includes(termo)
+            );
+            
+            if (professoresFiltrados.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="3" class="px-3 py-4 text-center text-gray-500">
+                            Nenhum professor encontrado.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            let html = '';
+            professoresFiltrados.forEach(prof => {
+                html += `
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="px-3 py-2">${prof.nome}</td>
+                        <td class="px-3 py-2">${prof.materia}</td>
+                        <td class="px-3 py-2 text-center">${prof.aulas}</td>
+                    </tr>
+                `;
+            });
+            
+            tbody.innerHTML = html;
+        }
+
+        // Função para limpar pesquisa de professores
+        function limparPesquisa() {
+            document.getElementById('pesquisaProfessor').value = '';
+            carregarTabelaProfessores();
+        }
+
+        // Função para ordenar professores
+        function ordenarProfessores(criterio) {
+            if (criterio === 'nome') {
+                professores.sort((a, b) => a.nome.localeCompare(b.nome));
+            } else if (criterio === 'materia') {
+                professores.sort((a, b) => a.materia.localeCompare(b.materia));
+            } else if (criterio === 'aulas') {
+                professores.sort((a, b) => b.aulas - a.aulas);
+            }
+            
+            carregarTabelaProfessores();
+        }
+
+        // Função para carregar seleção de professores
+        function carregarSelecaoProfessores() {
+            const select = document.getElementById('selecaoProfessor');
+            let html = '<option value="">Selecione um professor</option>';
+            
+            // Obter professores únicos pelo nome
+            const nomesUnicos = [...new Set(professores.map(p => p.nome))];
+            
+            nomesUnicos.forEach(nome => {
+                html += `<option value="${nome}">${nome}</option>`;
+            });
+            
+            select.innerHTML = html;
+        }
+
+        // Função para mostrar grade de um professor
+        function mostrarGradeProfessor() {
+            const nomeProfessor = document.getElementById('selecaoProfessor').value;
+            const container = document.getElementById('gradeProfessor');
+            
+            if (!nomeProfessor) {
+                container.innerHTML = `
+                    <table class="w-full">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-3 py-2 text-left font-semibold text-gray-700">Dia</th>
+                                <th class="px-3 py-2 text-left font-semibold text-gray-700">Horário</th>
+                                <th class="px-3 py-2 text-left font-semibold text-gray-700">Turma</th>
+                                <th class="px-3 py-2 text-left font-semibold text-gray-700">Matéria</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="4" class="px-3 py-4 text-center text-gray-500">
+                                    Selecione um professor para ver sua grade.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `;
+                return;
+            }
+            
+            // Coletar horários do professor
+            let horariosProfessor = [];
+            
+            turmas.forEach(turma => {
+                const dias = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
+                dias.forEach(dia => {
+                    turma.horarios[dia].forEach(horario => {
+                        if (horario.professor === nomeProfessor) {
+                            horariosProfessor.push({
+                                dia: dia,
+                                horario: horario.horario,
+                                turma: turma.nome,
+                                materia: horario.materia
+                            });
+                        }
+                    });
+                });
+            });
+            
+            if (horariosProfessor.length === 0) {
+                container.innerHTML = `
+                    <table class="w-full">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-3 py-2 text-left font-semibold text-gray-700">Dia</th>
+                                <th class="px-3 py-2 text-left font-semibold text-gray-700">Horário</th>
+                                <th class="px-3 py-2 text-left font-semibold text-gray-700">Turma</th>
+                                <th class="px-3 py-2 text-left font-semibold text-gray-700">Matéria</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="4" class="px-3 py-4 text-center text-gray-500">
+                                    Este professor não tem horários cadastrados.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `;
+                return;
+            }
+            
+            // Ordenar por dia da semana
+            const ordemDias = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
+            horariosProfessor.sort((a, b) => {
+                const indexA = ordemDias.indexOf(a.dia);
+                const indexB = ordemDias.indexOf(b.dia);
+                if (indexA !== indexB) {
+                    return indexA - indexB;
+                }
+                return a.horario.localeCompare(b.horario);
+            });
+            
+            let html = `
+                <table class="w-full">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="px-3 py-2 text-left font-semibold text-gray-700">Dia</th>
+                            <th class="px-3 py-2 text-left font-semibold text-gray-700">Horário</th>
+                            <th class="px-3 py-2 text-left font-semibold text-gray-700">Turma</th>
+                            <th class="px-3 py-2 text-left font-semibold text-gray-700">Matéria</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            horariosProfessor.forEach(horario => {
+                html += `
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="px-3 py-2">${horario.dia}</td>
+                        <td class="px-3 py-2">${horario.horario}</td>
+                        <td class="px-3 py-2">${horario.turma}</td>
+                        <td class="px-3 py-2">${horario.materia}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                    </tbody>
+                </table>
+            `;
+            
+            container.innerHTML = html;
+        }
+
+        // Carregar dados ao iniciar a página
+        document.addEventListener('DOMContentLoaded', function() {
+            carregarDadosTurmas();
+            carregarTurmas();
+            atualizarProfessores();
+        });
+    </script>
+</body>
+</html>
